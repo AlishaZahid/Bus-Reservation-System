@@ -1,0 +1,1961 @@
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<windows.h>
+using namespace std;
+
+struct Node
+{
+	int data;
+	Node* next;
+};
+
+	Node* head;
+	Node* tail;
+
+	//CREATING BUS SEATS USING LINKED LIST
+	void create_seats()
+	{
+		for (int i = 0; i < 15; i++)
+		{
+			Node* newNode = new Node;
+			newNode->data = 0;
+			newNode->next = nullptr;
+			if (head == nullptr)
+			{
+				head = newNode;
+				tail = newNode;
+			}
+			else
+			{
+				tail->next = newNode;
+				tail = newNode;
+			}
+		}
+	}
+
+	//CHECKING IF SEAT IS ALREADYBOOKED OR NOT
+	bool check_seat(int seatNo)
+	{
+		Node* check = head;
+		int temp = 1;
+		while (check != nullptr)
+		{
+			if (temp == seatNo && check->data == 0)
+			{
+				//temp++;
+				return true;
+			}
+			else if(temp == seatNo && check->data == 1)
+			{
+				return false;
+			}
+			temp++;
+			check = check->next;
+		}
+	}
+
+	//CHECKING HOW MANY SEATS ARE AVAILAIBLE 
+	void availaible_seats()
+	{
+		
+		int count = 0,i=1;
+		Node* temp = head;
+		Node* ptr = head;
+
+		cout << "\n--------------------------------------------------------------" << endl;
+		while (temp != nullptr)
+		{
+			cout << "\t\tSEAT NO " << i << " : " << temp->data << endl;
+			temp = temp->next;
+			i++;
+		}
+		cout << "\n--------------------------------------------------------------" << endl;
+		while (ptr != nullptr )
+		{
+			if (ptr->data == 0)
+			{
+				count++;
+			}
+			ptr = ptr->next;
+		}
+		cout << "\nTOTAL AVAILABLE SEATS ARE " << count << endl;;
+	}
+
+	//BOOKING SEAT USING SEAT NUMBER 
+	void book_seat(int seatno)
+	{
+		int temp=1;
+		Node* ptr=head;
+
+		while (ptr != nullptr)
+		{
+			if (temp == seatno)
+			{
+				ptr->data = 1;
+			}
+			temp++;
+			ptr = ptr->next;
+		}
+		cout << "\nSEAT NUMBER " << seatno<< " BOOKED SUCCESSFULLY" << endl;
+	}
+
+	//DISPLAY DATA
+
+	void display()
+	{
+		ifstream fin;
+		fin.open("SCHEDULE.txt", ios::in);
+		                                         
+		if (fin.is_open())
+		{
+			string line;
+			while (getline(fin, line))
+			{
+				cout << line << endl;
+			}
+
+		}
+		fin.close();
+	}
+////////////////////////////////////////////////////////////////////////
+
+//USER LOGIN AND CHOICES
+	class User
+	{
+		string firstName, secondName, emailid, loginid;
+		int pswrd, cnfrmPswrd, loginPswrd;
+	public:
+		User()
+		{
+			pswrd = 0;
+			cnfrmPswrd = 0;
+		}
+
+		//SIGNUP FROM AND FILE HANDLING TO SAVE THE USER DATA IN .txt FILE FOR FURTHER USE
+		void Signup()
+		{
+			//FOUT file for the login page 
+			ofstream fout;
+			fout.open("SIGNUP.txt", ios::out);
+
+			cout << "\nENTER YOUR FIRST NAME : ";
+			cin >> firstName;
+
+			cout << "\nENTER YOUR SECOND NAME : ";
+			cin >> secondName;
+
+			cout << "\nENTER YOUR EMAIL ID : ";
+			cin >> emailid;
+
+			cout << "\nENTER PASSWORD IN DIGITS: ";
+			cin >> pswrd;
+
+			cout << "\nENTER CONFIRM PASSWORD IN DIGITS : ";
+			cin >> cnfrmPswrd;
+
+			//IF PASSWORD AND CONFIRM PASSWORDS WILL BE DIFFERENT 
+			while (pswrd != cnfrmPswrd)
+			{
+				cout << "\n\t\tYOUR PASSWORD DIDN'T MATCH WITH CONFRM PASSWORD\n" << endl;
+				cout << "\nENTER PASSWORD AGAIN IN DIGITS: ";
+				cin >> pswrd;
+
+				cout << "\nENTER CONFIRM PASSWORD AGAIN IN DIGITS : ";
+				cin >> cnfrmPswrd;
+			}
+
+			fout << emailid << endl;
+			fout << cnfrmPswrd << endl;
+
+			fout.close();
+
+		}
+
+		void Login()
+		{
+			//FIN FILE FOR READING 
+			ifstream fin;
+			fin.open("SIGNUP.txt", ios::in);
+
+			while (!fin.eof())
+			fin >> emailid >> pswrd;
+
+			cout << "\nENTER YOUR EMAIL ID : ";
+			cin >> loginid;
+
+			cout << "\nENTER YOUR PASSWORD : ";
+			cin >> loginPswrd;
+
+			if (!fin.is_open())
+			{
+				cout << "\n\t\tFILE NOT OPENED" << endl;
+			}
+			else if (loginid == emailid && loginPswrd == pswrd)
+			{
+				cout << "\n\n\t\t LOG IN SUCCESSFULL" << endl;
+			}
+
+			//IF LOGIN EMAIL AND ID DOESN'T MATCHED FROM THE SIGNUP EMAIL AND ID
+			else
+			{
+				while (loginid != emailid && loginPswrd != pswrd || loginid != emailid && loginPswrd == pswrd || loginid == emailid && loginPswrd != pswrd)
+				{
+					cout << "\n\t\tWRONG ID OR PASSWORD" << endl;
+					cout << "\nENTER YOUR EMAIL ID AGAIN : ";
+					cin >> loginid;
+
+					cout << "\nENTER YOUR PASSWORD AGAIN : ";
+					cin >> loginPswrd;
+				}
+				cout << "\n\n\t\t LOG IN SUCCESSFULL" << endl;
+			}
+			fin.close();
+		}
+
+		void Schedule()
+		{
+
+			ofstream fout;
+			fout.open("SCHEDULE.txt", ios::out);
+
+			int DayChoice, timing, seatNumber, book;
+			cout << "\n\t****AVAILABLE BUS SERVICE******" << endl;
+			cout << "\n\t\t1. KARACHI\n\t\t2. ISLAMABAD\n\t\t3. RAWALPINDI" << endl;
+			int cityChoice;
+
+			cout << "\nENTER YOUR CITY CHOICE : ";
+			cin >> cityChoice;
+
+			if (cityChoice == 1)
+			{
+				//LAHORE TO KARACHI
+				fout << "CITY : KARACHI" << endl;
+
+				cout << "\n\t\t1. MONDAY\n\t\t2. TUESDAY\n\t\t3. WEDNESDAY \n\t\t4. THURSDAY\n\t\t5. FRIDAY\n\t\t6. SATURDAY\n\t\t7. SUNDAY" << endl;
+
+				cout << "\nENTER THE DAY FROM 1 TO 7: ";
+				cin >> DayChoice;
+
+				while (!(DayChoice >= 1 && DayChoice <= 7))
+				{
+					cout << "\n\t\tYOU ENTERED A WRONG CHOICE" << endl;
+					cout << "ENTER YOUR CHOICE AGAIN : ";
+					cin >> DayChoice;
+				}
+				switch (DayChoice)
+				{
+				case 1:
+				{
+					fout << "DAY : MONDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 10:00Am\n\t\t2. 2:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 2:
+				{
+					fout << "DAY : TUESDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 7:00Am\n\t\t2. 12:00Pm\n\t\t3. 3:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 7:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 12:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 3:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+
+				case 3:
+				{
+					fout << "DAY : WEDNESDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 9:00Am\n\t\t2. 2:00Pm\n\t\t3. 5:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 9:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 5:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 4:
+				{
+					fout << "DAY : THURSDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 10:00Am\n\t\t2. 2:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+
+							break;
+						}
+					}
+					break;
+				}
+				case 5:
+				{
+					fout << "DAY : FRIDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 8:00Am\n\t\t2. 1:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 8:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 1:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 6:
+				{
+					fout << "DAY : SATURDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 6:00Am\n\t\t2. 10:00Pm\n\t\t3. 3:00Pm\n\t\t4. 7:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 4))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 6:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 3:00Pm" << endl;
+					}
+					else if (timing == 4)
+					{
+						fout << "TIMING : 7:00Pm" << endl;
+					}
+					create_seats();
+
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 7:
+				{
+					fout << "SUNDAY" << endl;
+
+					cout << "\nNO BUS AVAILAIBLE BECAUSE OF HOLIDAY" << endl;
+					fout << "NO BUS AVAILAIBLE BECAUSE OF HOLIDAY" << endl;
+					break;
+				}
+				}
+			}
+			else if (cityChoice == 2)
+			{
+				//LAHORE TO ISLAMABAD
+				fout << "CITY : ISLAMABAD" << endl;
+
+				cout << "\n\t\t1. MONDAY\n\t\t2. TUESDAY\n\t\t3. WEDNESDAY \n\t\t4. THURSDAY\n\t\t5. FRIDAY\n\t\t6. SATURDAY\n\t\t7. SUNDAY" << endl;
+
+				cout << "\nENTER THE DAY YOU WANT TO TRAVEL FROM 1 TO 7: ";
+				cin >> DayChoice;
+
+				while (!(DayChoice >= 1 && DayChoice <= 7))
+				{
+					cout << "\n\t\tYOU ENTEREDA WRONG CHOICE" << endl;
+					cout << "ENTER YOUR CHOICE AGAIN : ";
+					cin >> DayChoice;
+				}
+				switch (DayChoice)
+				{
+				case 1:
+				{
+					fout << "DAY : MONDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 10:00Am\n\t\t2. 2:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 2:
+				{
+					fout << "DAY : TUESDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 7:00Am\n\t\t2. 12:00Pm\n\t\t3. 3:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 7:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 12:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 3:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+
+				case 3:
+				{
+					fout << "DAY : WEDNESDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 9:00Am\n\t\t2. 2:00Pm\n\t\t3. 5:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 9:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 5:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 4:
+				{
+					fout << "DAY : THURSDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 10:00Am\n\t\t2. 2:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 5:
+				{
+					fout << "DAY : FRIDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 8:00Am\n\t\t2. 1:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 8:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 1:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 6:
+				{
+					fout << "DAY : SATURDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 6:00Am\n\t\t2. 10:00Pm\n\t\t3. 3:00Pm\n\t\t4. 7:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 4))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 6:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 3:00Pm" << endl;
+					}
+					else if (timing == 4)
+					{
+						fout << "TIMING : 7:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 7:
+				{
+					fout << "SUNDAY" << endl;
+
+					cout << "\nNO BUS AVAILAIBLE BECAUSE OF HOLIDAY" << endl;
+					fout << "NO BUS AVAILAIBLE BECAUSE OF HOLIDAY" << endl;
+					break;
+				}
+				}
+			}
+			else if (cityChoice == 3)
+			{
+				//LAHORE TO RAWALPINDI
+				fout << "CITY : RAWALPINDI" << endl;
+
+				cout << "\n\t\t1. MONDAY\n\t\t2. TUESDAY\n\t\t3. WEDNESDAY \n\t\t4. THURSDAY\n\t\t5. FRIDAY\n\t\t6. SATURDAY\n\t\t7. SUNDAY" << endl;
+
+				cout << "\nENTER THE DAY YOU WANT TO TRAVEL FROM 1 TO 7 : ";
+				cin >> DayChoice;
+
+				while (!(DayChoice >= 1 && DayChoice <= 7))
+				{
+					cout << "\n\t\tYOU ENTEREDA WRONG CHOICE" << endl;
+					cout << "ENTER YOUR CHOICE AGAIN : ";
+					cin >> DayChoice;
+				}
+				switch (DayChoice)
+				{
+				case 1:
+				{
+					fout << "DAY : MONDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 10:00Am\n\t\t2. 2:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 2:
+				{
+					fout << "DAY : TUESDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 7:00Am\n\t\t2. 12:00Pm\n\t\t3. 3:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 7:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 12:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 3:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+
+				case 3:
+				{
+					fout << "DAY : WEDNESDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 9:00Am\n\t\t2. 2:00Pm\n\t\t3. 5:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 9:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 5:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 4:
+				{
+					fout << "DAY : THURSDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 10:00Am\n\t\t2. 2:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 2:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 5:
+				{
+					fout << "DAY : FRIDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 8:00Am\n\t\t2. 1:00Pm\n\t\t3. 6:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 3))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 8:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 1:00Pm" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 6:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 6:
+				{
+					fout << "DAY : SATURDAY" << endl;
+					cout << "\t*******AVAILABLE TIMINGS******" << endl;
+					cout << "\n\t\t1. 6:00Am\n\t\t2. 10:00Pm\n\t\t3. 3:00Pm\n\t\t4. 7:00Pm" << endl;
+
+					cout << "\nENTER YOUR TIME : ";
+					cin >> timing;
+
+					while (!(timing >= 1 && timing <= 4))
+					{
+						cout << "\nYOU ENTERED A WRONG TIME" << endl;
+						cout << "\nENTER YOUR TIME AGAIN : ";
+						cin >> timing;
+					}
+					if (timing == 1)
+					{
+						fout << "TIMING : 6:00Am" << endl;
+					}
+					else if (timing == 2)
+					{
+						fout << "TIMING : 10:00Am" << endl;
+					}
+					else if (timing == 3)
+					{
+						fout << "TIMING : 3:00Pm" << endl;
+					}
+					else if (timing == 4)
+					{
+						fout << "TIMING : 7:00Pm" << endl;
+					}
+					create_seats();
+					availaible_seats();
+
+					cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+					cin >> seatNumber;
+
+					while (seatNumber < 1 || seatNumber>15)
+					{
+						cout << "\n\tSEAT OT EXIST" << endl;
+						cout << "\nENTER SEAT NUMBER : ";
+						cin >> seatNumber;
+					}
+					fout << "SEAT NUMBER : " << seatNumber << endl;
+					book_seat(seatNumber);
+
+					cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;
+					cout << "PRESS 2 TO EXIT.......";
+					cin >> book;
+
+					while (book)
+					{
+						if (book == 1)
+						{
+							availaible_seats();
+
+							cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+							cin >> seatNumber;
+							while (seatNumber < 1 || seatNumber>15)
+							{
+								cout << "\n\tSEAT OT EXIST" << endl;
+								cout << "\nENTER SEAT NUMBER : ";
+								cin >> seatNumber;
+							}
+							while (check_seat(seatNumber) != true)
+							{
+								cout << "\n\tSEAT ALREADY BOOKED" << endl;
+								cout << "\nENTER SEAT NUMBER YOU WANT TO BOOK : ";
+								cin >> seatNumber;
+							}
+
+							fout << "SEAT NUMBER : " << seatNumber << endl;
+							book_seat(seatNumber);
+
+							cout << "\nPRESS 1 TO BOOK ANOTHER SEAT....." << endl;;
+							cout << "PRESS 2 TO EXIT.......";
+							cin >> book;
+						}
+						else 
+						{
+							cout << "\n-------------------------------------------------\n" << endl;
+							cout << "\t\t***RESERVATION DETAILS" << endl;
+							display();
+							cout << "\n-------------------------------------------------" << endl;
+							break;
+						}
+					}
+					break;
+				}
+				case 7:
+				{
+					fout << "SUNDAY" << endl;
+
+					cout << "\nNO BUS AVAILAIBLE BECAUSE OF HOLIDAY" << endl;
+					fout << "NO BUS AVAILAIBLE BECAUSE OF HOLIDAY" << endl;
+					break;
+				}
+				}
+			}
+			fout.close();
+		}
+};
+
+
+int main()
+{
+	int loginChoice, setChoice, reseChoice, seatNumber;
+	User u;
+
+	system("Color 0A");
+	cout << "\t\tWElCOME TO BUS RESEVATION SYSTEM\n" << endl;
+
+	cout << "\t\t1.SIGNUP\n\t\t2. LOGIN" << endl;
+	cout << "\nENTER YOUR CHOCIE : ";
+	cin >> loginChoice;
+
+	while (loginChoice != 1 && loginChoice != 2)
+	{
+		cout << "\nENTER YOUR CHOICE AGAIN : ";
+		cin >> loginChoice;
+	}
+
+	///////////////////////////////////////////////////////////////////////
+	 switch (loginChoice )
+	{
+	 case 1:
+	 {
+		cout << "*****************************************************" << endl;
+		cout << "\n\t\t WELCOME TO SINGUP FORM" << endl;
+
+		u.Signup();
+
+		cout << "\n\t\tSIGN UP SUCCESSFULL" << endl;
+
+		cout << "\n\t\t1.SIGNUP\n\t\t2. LOGIN" << endl;
+		cout << "\nENTER YOUR CHOCIE : ";
+		cin >> loginChoice;
+       
+	
+		if (loginChoice == 1)
+		{
+			cout << "\n\t\tYOU ALREADY REGISTERED AN ACCOUNT" << endl;
+			while (loginChoice != 2)
+			{
+				cout << "\n\t\t1.SIGNUP\n\t\t2. LOGIN" << endl;
+				cout << "\nENTER YOUR CHOCIE AGAIN : ";
+				cin >> loginChoice;
+			}
+		}
+	}
+	 case 2:
+	 {
+		cout << "*********************************************************" << endl;
+		cout << "\n\t\t WELCOME TO LOGIN FORM" << endl;
+
+		u.Login();
+
+		cout << "\n*******************WELCOME TO HOME PAGE**********************" << endl;
+		cout << "\n\t\t1. RESERVATION\n\t\t2.EXIT" << endl;
+		cout << "\nENTER YOUR CHOCIE : ";
+		cin >> setChoice;
+
+		while (!(setChoice >= 1 && setChoice <= 2))
+		{
+			cout << "\nENTER YOUR CHOICE AGAIN : ";
+			cin >> setChoice;
+		}
+	}
+	}
+
+	/////////////////////////////////////////////////////
+	 switch (setChoice)
+	 {
+	 case 1:
+	 {
+		 cout << "\n*******************WELCOME TO RESERVATION PAGE***********************" << endl;
+	     u.Schedule();
+	 }
+	 case 2:
+	 {
+		 cout << "\n\t***PROGRAM EXIT SECCESSFULLY ***" << endl;
+		 break;
+	 }
+	 }
+
+	return 0;
+}
